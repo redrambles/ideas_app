@@ -1,5 +1,6 @@
 const express = require('express');
 const exphbs = require('express-handlebars');
+const path = require('path');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
 const flash = require('connect-flash');
@@ -33,6 +34,10 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
+// Static folder
+app.use(express.static(path.join(__dirname, 'public')));
+
+
 // Method Override middleware
 app.use(methodOverride('_method'));
 
@@ -56,7 +61,6 @@ app.use(flash());
 // Global variables
 app.use(function(req, res, next){
   res.locals.success_msg = req.flash('success_msg');
-  console.log(req.flash('success_msg'));
   res.locals.error_msg = req.flash('error_msg');
   res.locals.error = req.flash('error');
   next();
@@ -65,9 +69,11 @@ app.use(function(req, res, next){
 
 // Index Route
 app.get('/', (req, res) => {
-  const title = 'Hiya!';
+  const title = 'Capture Your Ideas!';
+  const subtitle = 'Jot down ideas for your next learning projects.';
   res.render('index', {
-    title: title
+    title: title,
+    subtitle: subtitle
   });
 });
 
