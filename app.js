@@ -2,6 +2,7 @@ const express = require('express');
 const exphbs = require('express-handlebars');
 const path = require('path');
 const bodyParser = require('body-parser');
+const passport = require('passport');
 const methodOverride = require('method-override');
 const flash = require('connect-flash');
 const session = require('express-session');
@@ -13,6 +14,10 @@ const app = express();
 // Load Routes
 const ideas = require('./routes/ideas');
 const users = require('./routes/users');
+
+
+// Passport Config
+require('./config/passport')(passport);
 
 // Connect to Mongoose
 mongoose.connect('mongodb://localhost/ideas-dev', {
@@ -55,14 +60,20 @@ app.use(session({
   saveUninitialized: true
 }));
 
+
 // Flash middleware
 app.use(flash());
+
+// Passport middleware (very important to put this after the session middleware)
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Global variables
 app.use(function(req, res, next){
   res.locals.success_msg = req.flash('success_msg');
   res.locals.error_msg = req.flash('error_msg');
   res.locals.error = req.flash('error');
+  res.locals.user = req.user || null;
   next();
 });
 
